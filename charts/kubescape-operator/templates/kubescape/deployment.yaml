@@ -91,6 +91,8 @@ spec:
           value: "{{ .Values.kubescape.downloadArtifacts }}"
         - name: POLICIES_CACHE_TTL
           value: "{{ .Values.kubescape.policiesCacheTtl }}"
+        - name: KS_STORAGE_ENABLED # temporary (should be set via configmap)
+          value: "{{ eq .Values.capabilities.continuousScan "enable" }}"
         - name: KS_DEFAULT_CONFIGMAP_NAME
           value: "{{ .Values.kubescape.name }}-config"
         - name: KS_DEFAULT_CONFIGMAP_NAMESPACE
