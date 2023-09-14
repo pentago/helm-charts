@@ -159,6 +159,9 @@ kubescape:
   # -- download policies every scan, we recommend it should remain true, you should change to 'false' when running in an air-gapped environment or when scanning with high frequency (when running with Prometheus)
   downloadArtifacts: true
 
+  # -- policy cache TTL in minutes - downloaded policy artifacts will be stored in the cache and utilized for the specified duration. setting this value to 0 will deactivate the cache.
+  policiesCacheTtl: 10
+
   # -- skip check for a newer version
   skipUpdateCheck: false
 

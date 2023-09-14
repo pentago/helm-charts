@@ -9,9 +9,11 @@ metadata:
     app: {{ .Values.kubescape.name }}-config
     tier: {{ .Values.global.namespaceTier }}
 data:
+
   config.json: |
     {
       "accountID": "{{ .Values.account }}",
-      "clusterName": "{{ regexReplaceAll "\\W+" .Values.clusterName "-" }}"
+      "clusterName": "{{ regexReplaceAll "\\W+" .Values.clusterName "-" }}",
+      "storageEnabled": {{ eq .Values.capabilities.continuousScan "enable" }}
     }
 {{- end }}
