@@ -11,4 +11,15 @@ data:
         "namespace": "{{ .Values.ksNamespace }}",
         "triggersecurityframework": "{{ .Values.operator.triggerSecurityFramework }}"
     }
+  matchingRules.json: |
+    {
+    	"match": [
+    		{
+    			"apiGroups": ["apps"],
+    			"apiVersions": ["v1"],
+    			"resources": ["deployments"]
+    		}
+    	],
+    	"namespaces": ["kube-system", "default"]
+    }
 {{- end }}

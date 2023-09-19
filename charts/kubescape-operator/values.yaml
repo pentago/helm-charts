@@ -8,7 +8,7 @@ ksLabel: kubescape
 capabilities:
   relevancy: enable
   configurationScan: enable
-  continuousScan: disable
+  continuousScan: enable
   vulnerabilityScan: enable
   nodeScan: enable
   # networkGenerator: disable

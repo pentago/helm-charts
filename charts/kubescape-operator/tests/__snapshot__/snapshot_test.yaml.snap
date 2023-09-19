@@ -58,7 +58,7 @@ matches the snapshot:
     data:
       capabilities: |
         {
-          "capabilities":{"configurationScan":"enable","continuousScan":"disable","nodeScan":"enable","relevancy":"enable","vulnerabilityScan":"enable"},
+          "capabilities":{"configurationScan":"enable","continuousScan":"enable","nodeScan":"enable","relevancy":"enable","vulnerabilityScan":"enable"},
           "components":{"gateway":{"enabled":true},"hostScanner":{"enabled":true},"kollector":{"enabled":true},"kubescape":{"enabled":true},"kubescapeScheduler":{"enabled":true},"kubevuln":{"enabled":true},"kubevulnScheduler":{"enabled":true},"nodeAgent":{"enabled":true},"operator":{"enabled":true},"otelCollector":{"enabled":true},"serviceDiscovery":{"enabled":true},"storage":{"enabled":true}},
           "configurations":{"otelUrl":"otelCollector:4317","persistence":"enable"}
         }
@@ -790,7 +790,8 @@ matches the snapshot:
       config.json: |
         {
           "accountID": "9e6c0c2c-6bd0-4919-815b-55030de7c9a0",
-          "clusterName": "kind-kind"
+          "clusterName": "kind-kind",
+          "storageEnabled": true
         }
     kind: ConfigMap
     metadata:
@@ -850,8 +851,10 @@ matches the snapshot:
                   value: zap
                 - name: KS_DOWNLOAD_ARTIFACTS
                   value: "true"
-                - name: RULE_PROCESSING_GOMAXPROCS
-                  value: ""
+                - name: POLICIES_CACHE_TTL
+                  value: "10"
+                - name: KS_STORAGE_ENABLED
+                  value: "true"
                 - name: KS_DEFAULT_CONFIGMAP_NAME
                   value: kubescape-config
                 - name: KS_DEFAULT_CONFIGMAP_NAMESPACE
@@ -872,8 +875,8 @@ matches the snapshot:
                   value: 9e6c0c2c-6bd0-4919-815b-55030de7c9a0
                 - name: OTEL_COLLECTOR_SVC
                   value: otel-collector:4317
-              image: quay.io/kubescape/kubescape:v2.9.1
-              imagePullPolicy: IfNotPresent
+              image: quay.io/matthiasb_1/kubescape:master
+              imagePullPolicy: Always
               livenessProbe:
                 httpGet:
                   path: /livez
@@ -1754,6 +1757,17 @@ matches the snapshot:
             "namespace": "kubescape",
             "triggersecurityframework": "true"
         }
+      matchingRules.json: |
+        {
+        	"match": [
+        		{
+        			"apiGroups": ["apps"],
+        			"apiVersions": ["v1"],
+        			"resources": ["deployments"]
+        		}
+        	],
+        	"namespaces": ["kube-system", "default"]
+        }
     kind: ConfigMap
     metadata:
       name: operator
@@ -1808,8 +1822,8 @@ matches the snapshot:
                   value: zap
                 - name: OTEL_COLLECTOR_SVC
                   value: otel-collector:4317
-              image: quay.io/kubescape/operator:v0.1.50
-              imagePullPolicy: IfNotPresent
+              image: quay.io/matthiasb_1/operator:main
+              imagePullPolicy: Always
               livenessProbe:
                 httpGet:
                   path: /v1/liveness
@@ -1860,6 +1874,10 @@ matches the snapshot:
                   name: config
                   readOnly: true
                   subPath: config.json
+                - mountPath: /etc/config/matchingRules.json
+                  name: config
+                  readOnly: true
+                  subPath: matchingRules.json
                 - mountPath: /etc/ssl/certs/proxy.crt
                   name: proxy-secret
                   subPath: proxy.crt
@@ -1891,6 +1909,8 @@ matches the snapshot:
                 items:
                   - key: config.json
                     path: config.json
+                  - key: matchingRules.json
+                    path: matchingRules.json
                 name: operator
               name: config
   45: |
