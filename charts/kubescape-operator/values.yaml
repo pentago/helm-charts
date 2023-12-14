@@ -594,7 +594,6 @@ nodeAgent:
     requests:
       memory: 180Mi
     limits:
-      cpu: 500m
       memory: 700Mi
 
   env:
